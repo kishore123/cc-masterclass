@@ -48,6 +48,55 @@ Summarize what changed in git today as standup notes.
 ```
 Type `/standup`. That's the whole feature — a reusable prompt.
 
+#### How it actually runs (the part everyone gets confused by)
+
+A command `.md` is a **prompt, not a script.** Nothing in the file executes on its own.
+When you type `/standup`, the harness injects the file's text as instructions, and *Claude*
+does the work:
+
+```
+/standup typed
+  -> harness loads standup.md text as an instruction
+  -> Claude interprets it
+  -> Claude runs real tools (git log, git status) itself
+  -> Claude reads the output
+  -> Claude formats the result per the prompt
+```
+
+So when a `standup.md` says "run `git log --since=midnight`", that line is *guidance for
+Claude*, not a shell command the file runs. Claude is free to adapt it — e.g. our Unix-style
+`git` example got adjusted to PowerShell on Windows automatically. A real script would have
+just errored; the prompt flexed. **That adaptability is the whole point of a prompt over a
+script.**
+
+#### Consistent ≠ deterministic (teach this explicitly)
+
+- A **script** runs identically every time, byte for byte.
+- A **command/skill** steers Claude toward the same *shape and facts*, but the wording can
+  vary run to run. It's "reliably similar," not "identical."
+
+Same repo + `/standup` → same Done/In-progress/Next/Blockers structure, essentially the same
+facts, slightly different phrasing. The model's judgment is layered on top — which is what
+makes it adapt instead of break.
+
+#### Command vs. just typing the request
+
+You could always free-type "summarize today's git changes as standup notes." So why save a
+command? Three reasons: **consistency** (same structure every time), **less typing + a shared
+team vocabulary** (it's checked into the repo), and it **encodes decisions you don't want to
+re-make** (our `standup.md` bakes in "fall back to the most recent day if nothing today,"
+"mark Next as a guess," "omit Blockers if none").
+
+**Rule of three:** free-type a request until you've asked for roughly the same thing three
+times — *then* capture it as a command. Exploration stays free-form; rituals become commands.
+
+#### Terminology, kept straight
+
+A **slash command is the simplest kind of skill** — a prompt-only one. A full **skill** can
+also bundle scripts, resource files, and a `description` that lets Claude auto-select it. So:
+command ⊂ skill. Don't over-think the distinction; reach for a skill when you need
+auto-triggering or bundled files (see next).
+
 ### Skill
 `.claude/skills/pdf-report/SKILL.md`
 ```markdown
