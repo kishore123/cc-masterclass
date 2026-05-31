@@ -110,6 +110,52 @@ Steps: read the CSV, build an HTML report using template.html in this folder, re
 until it decides to use the skill, then loads the body. A vague description = the skill
 never fires. Skills can also ship scripts and resource files in the same folder.
 
+#### How a skill actually fires (we built one: `git-insights`)
+
+A skill is a **folder**, not a single file. Minimum contents = one file named exactly
+`SKILL.md`; optional extra files (scripts, templates) ship alongside it:
+
+```
+.claude/skills/git-insights/
+  SKILL.md       <- REQUIRED. frontmatter (name + description) + instructions
+  insights.py    <- OPTIONAL bundled script (only if the skill runs code)
+```
+
+The round-trip when you say *"give me insights on this repo"* (no slash typed):
+
+```
+You: "give me insights on this repo"
+  -> Claude scans every skill's name + description
+  -> your phrasing matches git-insights' description
+  -> Claude auto-selects it            <- the key difference from a command
+  -> Claude reads SKILL.md's body for the first time (lazy load)
+  -> body says: run python .claude/skills/git-insights/insights.py
+  -> Claude runs the bundled script
+  -> Claude formats the script's output for you
+```
+
+Two things to teach from this:
+
+1. **The match is semantic, not keyword.** You said "insights on this repo," not
+   "git-insights" or "stats" — it fired because the *description* covers that intent.
+   This is why you write the description for **how people actually ask**, not for yourself.
+2. **The script ran because SKILL.md told Claude to** — the skill is still a prompt; it
+   just happens to instruct Claude to execute a bundled file. That bundling (shipping code
+   + resources next to the prompt) is the thing a plain command can't do.
+
+#### Command vs. skill, side by side
+
+|  | Slash command (`/standup`) | Skill (`git-insights`) |
+|---|---|---|
+| Lives in | one `.md` in `commands/` | a **folder** with `SKILL.md` |
+| Invoked by | **you** typing `/name` | **Claude**, by matching the description |
+| Selection | explicit | **semantic, automatic** |
+| Body loaded | every time | **lazily**, only when it fires |
+| Can bundle scripts/files | no | **yes** |
+
+A **slash command is the simplest kind of skill** (prompt-only). Reach for a full skill
+the moment you need **auto-triggering** or **bundled files/code**.
+
 ### MCP server (consume an existing one first)
 ```bash
 claude mcp add --transport stdio sqlite -- npx -y @modelcontextprotocol/server-sqlite ./db.sqlite
