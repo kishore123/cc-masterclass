@@ -286,3 +286,44 @@ This single exercise exercises commands, sub-agents, tool scoping, and orchestra
 ```
 
 User-level equivalents live under `~/.claude/` (Windows: `C:\Users\<you>\.claude\`).
+
+### Three scopes (they merge at session start)
+
+| Scope | Path | Visible to |
+|---|---|---|
+| **Project** | `<repo>/.claude/` | anyone who clones the repo (versioned with the code) |
+| **User** | `~/.claude/` | just you, across every repo |
+| **Plugin** | `~/.claude/plugins/` | bundles you install from a marketplace |
+
+The built-in commands you see (`/code-review`, `/verify`, `/simplify`…) come from the
+**plugin** layer, not files you wrote.
+
+### Local vs. a company "skills hub" (and staleness)
+
+**Core truth: skills/commands always load from the local filesystem.** There is *no*
+"point Claude at a hub URL and it fetches the skill live mid-conversation." At session
+start Claude reads the files physically present in the folders above. So there is always a
+**local copy** — deliberately, because a skill can ship executable code (`insights.py`),
+and you don't want that silently pulled from a remote at run time.
+
+But that does **not** mean hand-copied, rotting files. A **plugin marketplace** *is* the
+company hub — just a git repo of bundled skills/commands/agents:
+
+```bash
+claude plugin marketplace add <company-repo>   # register the hub once
+claude plugin install <bundle>                  # pulls it local
+claude plugin update  <bundle>                  # re-syncs to latest
+```
+
+So the model is **managed-local**, not manual-local: the hub is the source of truth, and
+`update` re-pulls. Three ways to keep current:
+
+1. **Marketplace + `update`** (recommended for a company) — versioned, auditable, rollback-able.
+2. **Make the folder a synced checkout** — `.claude/skills/` as a git submodule, or a
+   `~/.claude/` your team `git pull`s. Hub stays authoritative; local is just a clone.
+3. **Project scope for repo-specific skills** (like `git-insights`) — they live *in the
+   repo*, versioned with the code, so cloning = getting the current skills, no drift.
+
+**When you truly need always-fresh, centrally-hosted logic with no local copy at all,
+that's not a skill — that's an MCP server** (logic runs on the server, Claude talks to it
+over a protocol). See the MCP section.
