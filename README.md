@@ -9,6 +9,35 @@ orchestrate them with a master agent.
 
 ---
 
+## Build progress (resume here)
+
+We're building one of each primitive hands-on — **build → demo live → capture in this doc**.
+Each below was actually created in `.claude/` (or `~/.claude/`) and verified live.
+
+| # | Primitive | Artifact | Live demo | Status |
+|---|---|---|---|---|
+| 1 | Command | `.claude/commands/standup.md` | `/standup` ran | ✅ done |
+| 2 | Skill | `.claude/skills/git-insights/` (+ `insights.py`) | auto-fired on "insights on this repo" | ✅ done |
+| 3 | MCP | (connected server) | live Google Drive `list_recent_files` | ✅ done |
+| 4 | Sub-agent | `.claude/agents/reviewer.md` | spawned via built-in `Explore` | ✅ done |
+| 5 | Hook | `.claude/settings.json` + `.claude/hooks/log-py-edits.ps1` | logged a real `.py` edit | ✅ done |
+| 6 | Plugin | `~/.claude/skills/cc-masterclass-kit/` | bundled all 4, `/reload-plugins` loaded it | ✅ done |
+| 7 | **Orchestration** | — | **NOT STARTED** | ⏭️ next |
+
+**Resume point — Orchestration (the finale).** Plan agreed, explanation-first:
+- **A. In-session (no code):** build an `/orchestrate` command; live demo = a **repo-analysis
+  fan-out** (2–3 read-only `Explore` workers answer different questions about this repo in
+  parallel, then merge). *This is the part we execute live.*
+- **B. Agent SDK (programmatic):** sketch the `query(...)` loop in Python/TS — *explained &
+  code-sketched only, not run here* (needs its own project/auth/runtime).
+- **Middle ground:** `/loop` and `/schedule`.
+- **Then:** capstone idea `/ship-feature` (plan → implementer + reviewer + tester → merge).
+
+Open decisions parked: plugin is **user-scoped only** (not vendored into this repo, no
+`marketplace.json` yet — deferred until we actually ship it).
+
+---
+
 ## 1. The mental model (teach this first)
 
 Everything in Claude Code is **context + tools + a loop**. Every feature is just a
