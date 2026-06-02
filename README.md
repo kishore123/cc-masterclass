@@ -164,6 +164,62 @@ claude mcp add --transport stdio sqlite -- npx -y @modelcontextprotocol/server-s
 internal services. Transports: **stdio**, **SSE**, **HTTP**. You'll mostly *consume*
 existing servers; building one is a later module.
 
+#### A live MCP call (worked example: Google Drive)
+
+An MCP server registers its tools **directly into Claude's toolset** — no skill or command
+needed. Ask in plain language and Claude routes the call:
+
+```
+You: "list my last 5 Drive files"
+  -> Claude routes: server = Google Drive, tool = list_recent_files, arg = pageSize:5
+  -> the call leaves your machine, hits Google's API via the MCP server
+  -> server returns live JSON (titles, ids, mimeTypes, modified times, a nextPageToken)
+  -> Claude formats it for you
+```
+
+Three things this proves:
+1. **No local copy of the logic.** Nothing in your repo knows how to talk to Drive — the
+   server holds that, runs remotely, and is always current. This is the "server-hosted, no
+   staleness" case we contrast against skills (skills/commands are always local files).
+2. **Reach beyond the repo.** It returned real Drive data — outside files + shell. That
+   extension of reach is the entire point of MCP.
+3. **Auto-routing from one sentence: server -> tool -> args.** The response's
+   `nextPageToken` is how "show more" would paginate. Routing quality rides on the tool's
+   **own `description`** — the "description is the API" throughline, again.
+
+Honest edge: a **read** fires directly; a **write** (create/delete/send) should be
+**confirmed first**, not silently auto-executed.
+
+#### Mental model: one merged menu (skills + MCP tools + built-ins)
+
+This is the orchestration insight that ties the modules together:
+
+- Claude doesn't check skills *first* and fall back to MCP. **Everything available — skills,
+  MCP tools, built-in Bash/Read — is on one table at once**, and Claude picks the best fit
+  by matching intent against all their descriptions. Holistic selection, not ordered fallback.
+- A workflow is often a **mix**: maybe one skill, maybe three raw tools, often both. And a
+  **skill can itself orchestrate MCP tools** (its body says "call Drive's `list_recent_files`,
+  then Gmail's `search_threads`, then summarize").
+- **Saving a liked workflow as a skill = freezing a good composition** so next time it's one
+  named step instead of re-derived (the rule-of-three capture).
+
+> **MCP gives Claude new _verbs_; skills/commands are _sentences_ that use those verbs in a
+> repeatable way.**
+
+#### Two doors to a skill: auto vs. explicit
+
+Auto-selection is the default, not the only door:
+
+| Door | How | When |
+|---|---|---|
+| **Auto** | natural language ("give me repo insights") | you want Claude to route; don't care which capability fires |
+| **Explicit** | type `/git-insights` | you know exactly what you want; guarantee *this* skill, no routing guess |
+
+Syntax note: it's **`/<skill-name>`** (e.g. `/git-insights`), **not** `/skills/<name>`. Same
+`/name` form as a command — because a command *is* the simplest skill. Explicit invocation
+pins *which* skill runs; the body still executes with model judgment (you pin the *which*,
+not the byte-for-byte *how*).
+
 ### Sub-agent
 `.claude/agents/reviewer.md`
 ```markdown
