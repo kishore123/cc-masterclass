@@ -370,14 +370,76 @@ command can't call an MCP tool" rule is about `type: "command"`.)*
    and remember the generated output (`hook.log`) is an artifact — **gitignore it.**
 
 ### Plugin
-Once you have skills/agents/commands you like, bundle them into a repo with a
-`marketplace.json`, then:
-```bash
-claude plugin marketplace add <repo>
-claude plugin install <name>
+**Lesson:** a plugin **bundles the primitives** (commands + skills + agents + hooks + MCP
+configs) into one installable unit — the answer to "give the whole team this exact toolkit."
+
+#### Do you still need a marketplace? (Claude Code 2.1.x) — two paths
+
+The marketplace is **no longer required for authoring/personal use** — it's now reserved for
+*distribution*:
+
+| Goal | Marketplace? | How |
+|---|---|---|
+| **Author / use locally** | **No** | `claude plugin init <name>` scaffolds into `~/.claude/skills/<name>/` and **auto-loads** as `<name>@skills-dir`. Zero marketplace. |
+| **Distribute to a team** | **Yes** | publish to a marketplace (git/GitHub/local path); others `claude plugin install`. `claude plugin tag` cuts release tags. |
+
+`~/.claude/skills/` does **double duty**: a folder with a `.claude-plugin/plugin.json` loads
+as a **plugin**; a folder with just `SKILL.md` loads as a **bare skill**. The `@skills-dir`
+pseudo-marketplace is what auto-scans that directory.
+
+#### We built one: `cc-masterclass-kit` (bundling all four primitives)
+
 ```
-**Lesson:** plugins are how you **distribute your masterclass kit to the whole team in one
-command** — they can bundle skills, agents, commands, hooks, and MCP servers together.
+~/.claude/skills/cc-masterclass-kit/
+  .claude-plugin/plugin.json          # manifest: name, version, description, author
+  commands/standup.md                 # the command
+  agents/reviewer.md                  # the sub-agent
+  skills/git-insights/SKILL.md (+ insights.py)   # the skill + its script
+  hooks/hooks.json (+ log-py-edits.ps1)          # the hook config + its script
+```
+
+Flow we used: **`init` → populate → `validate` → `/reload-plugins`.**
+
+- **`init` auto-fills** name, version (`0.1.0`), author, `$schema` — and leaves the
+  **description** + contents as `TODO`. Like `npm init`: valid skeleton, details are yours.
+- **You populate**: drop in the four primitives, write a real description.
+- **`claude plugin validate <path>`** catches manifest/frontmatter errors (it flagged our
+  command's missing frontmatter; we added a `description`).
+- **`/reload-plugins`** loads it **without a full restart** (or restart). Result:
+  `cc-masterclass-kit@skills-dir · v0.1.0 · user scope · loaded`.
+
+#### Hooks in a plugin live in the plugin, not your settings.json
+
+A plugin can't (and shouldn't) edit a user's `settings.json`. So its hook ships in the
+plugin's **own `hooks/hooks.json`**, and the harness **auto-merges** it when the plugin loads.
+The installer **touches no settings file** — enable the plugin, the hook is active; disable/
+uninstall, it's gone. Use **`${CLAUDE_PLUGIN_ROOT}`** for paths so the hook finds its script
+wherever the plugin lands on each machine.
+
+| | `settings.json` hook | plugin `hooks/hooks.json` |
+|---|---|---|
+| Installed by | each person, by hand | the plugin, automatically |
+| To get it | paste into settings | enable the plugin |
+| To remove | hand-edit settings | disable/uninstall plugin |
+
+#### Namespacing resolves duplicates
+
+After load, plugin components are namespaced **`<plugin>:<name>`** — e.g.
+`cc-masterclass-kit:standup`, `cc-masterclass-kit:git-insights` — so they coexist with any
+project-scope `standup`/`git-insights` instead of colliding. (In a real rollout you'd ship the
+plugin *instead of* hand-placed files, not alongside them.)
+
+#### Distribution (the team path), in brief
+
+```bash
+claude plugin marketplace add <repo-or-path>      # register the hub once
+claude plugin install cc-masterclass-kit@<market> # pull it
+claude plugin update  cc-masterclass-kit          # restart required to apply
+```
+
+This is the **managed-local** distribution from the scopes discussion: the marketplace (a git
+repo) is the source of truth; `update` re-pulls. One artifact, two delivery modes —
+auto-load locally now, marketplace-distribute later.
 
 ---
 
