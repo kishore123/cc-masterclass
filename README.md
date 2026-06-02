@@ -311,6 +311,64 @@ Our `reviewer` is **project-scoped**. Custom agents are **not** global — only 
 you enforce "always format after edit," "never touch prod," etc. Common events:
 `PreToolUse`, `PostToolUse`, `Stop`, `UserPromptSubmit`.
 
+#### The key distinction: harness-runs, not model-decides
+
+Every primitive before this — commands, skills, MCP, sub-agents — is something **Claude
+chooses** to invoke. A hook is the opposite: **the harness fires it automatically on an
+event, outside the model loop.** No description-matching, no judgment. That makes hooks the
+tool for **guarantees**.
+
+```
+Claude's primitives:  model decides  -> "consistent, not deterministic"
+Hooks:                harness decides -> deterministic, every matching event
+```
+
+Three parts: **event** (`PostToolUse`), **matcher** (which tools, `Edit|Write`), **command**
+(shell to run). The command gets the **event JSON on stdin** (`tool_name`, `tool_input.file_path`, …).
+
+#### We built one: conditional `.py`-edit logger (and it fired live)
+
+`.claude/settings.json` registers a `PostToolUse`/`Edit|Write` hook that runs a script:
+
+```json
+{ "hooks": { "PostToolUse": [ { "matcher": "Edit|Write",
+  "hooks": [ { "type": "command",
+    "command": "powershell -NoProfile -File .claude/hooks/log-py-edits.ps1" } ] } ] } }
+```
+
+The script (`.claude/hooks/log-py-edits.ps1`) reads the stdin JSON and logs **only `.py`**
+edits — that `if file ends with .py` test is **rule-logic inside the hook** (the matcher is
+coarse; the script is the fine rule). When we edited `insights.py`, a line appeared in
+`hook.log` **without Claude choosing to write it** — the harness did. Editing a `.md` file
+produced nothing. That's the whole lesson in one observation.
+
+#### Rules & guidelines a hook can carry (three layers)
+
+1. **Matcher** — *when* it triggers (which event/tools).
+2. **Script logic** — *whether* to act, by inspecting the stdin payload (file type, path, args).
+3. **Decision back to the harness** — a `PreToolUse` hook can **block** an action (non-zero
+   exit / a permission-decision JSON), or **inject context** (`UserPromptSubmit`). So hooks
+   don't just observe — they **gate and steer**.
+
+#### Can a hook call an MCP tool?
+
+Not as a normal shell hook — MCP tools live in **Claude's loop**; a `command` hook runs
+*outside* it. Two clean bridges: (a) the hook script **calls the external service directly**
+(its own API/CLI), or (b) the hook **feeds context back** and lets Claude make the MCP call.
+*(Advanced: the hooks schema also supports `type: "mcp_tool"`, `"prompt"`, `"agent"`, and
+`"http"` hooks — so the harness itself can invoke an MCP tool as a hook. The plain "shell
+command can't call an MCP tool" rule is about `type: "command"`.)*
+
+#### Two gotchas we hit live (worth teaching)
+
+1. **Watcher registration.** A `settings.json` created *mid-session* may not be watched
+   until you open `/hooks` once or restart — the watcher only tracks dirs that had a settings
+   file at session start. (Ours happened to fire; don't rely on it — verify with `/hooks`.)
+2. **Hooks run real shell, silently, on every match.** That's the power *and* the footgun:
+   a bad command fires every time. Keep them safe (we logged, didn't mutate), pick the right
+   **scope** (`settings.json` = shared/committed vs `settings.local.json` = personal/gitignored),
+   and remember the generated output (`hook.log`) is an artifact — **gitignore it.**
+
 ### Plugin
 Once you have skills/agents/commands you like, bundle them into a repo with a
 `marketplace.json`, then:
