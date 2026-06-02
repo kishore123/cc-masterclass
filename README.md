@@ -234,6 +234,65 @@ You are a strict code reviewer. Report only real correctness bugs with file:line
 **Lesson:** a sub-agent has its **own context window** and **restricted tools**. That
 isolation is the point — it keeps the main thread clean and caps what each helper can touch.
 
+#### Agent vs. sub-agent (same thing, different position)
+
+"Agent" = anything that is *context + tools + a loop* — **the main session is an agent too.**
+"Sub-agent" = an agent another agent **spawns as a worker** and that reports back up. The
+"sub-" is positional, not a different technology.
+
+```
+You
+ └─ Main agent (me)        <- an agent; runs the orchestration loop
+      ├─ reviewer          <- a sub-agent: own context, scoped tools, returns only its result
+      └─ tester            <- another, can run in parallel
+```
+
+Your mental model, confirmed: a sub-agent runs in its **own context**, does **one scoped
+task**, with **only the tools you grant**, and hands back **only its final answer** (its
+scratch work — even 20 files read — never enters the main context). That last bit is the
+quiet superpower: heavy digging stays in the worker; the main thread stays clean.
+
+#### Lifecycle: spawned per task, not a waiting daemon
+
+`reviewer.md` is **inert definition on disk** — nothing runs until I delegate. Each
+`Task(reviewer)` call spins up a **fresh, cold, stateless** instance that does the job,
+returns, and is torn down. Spawn it twice = two independent instances with no shared memory.
+**The loop lives in the orchestrator (me), not the worker** — a sub-agent is a *function
+call*, not a *service*. (The persistent "waits for triggers" model is the Agent SDK /
+scheduled routines, a different layer — see orchestration.)
+
+#### Where they run: local PC + the model API
+
+A sub-agent is **not a separate machine**. The harness, every agent loop, and **all tool
+execution (Read, Bash, git) run locally on your PC**; only the **reasoning** happens on
+Anthropic's servers via each agent's own API calls. "Parallel" = concurrency inside your one
+local session, with the model calls overlapping. So fan-out is bounded by **your local I/O +
+your API limits**, not free horizontal scale. (Genuinely remote agents — `/code-review
+ultra`, scheduled routines — are a different feature set.)
+
+#### Scope: same project / user / built-in model as everything else
+
+| Scope | Path | Available in |
+|---|---|---|
+| **Project** | `<repo>/.claude/agents/` | only that repo (commit it → travels with the repo) |
+| **User** | `~/.claude/agents/` | all your repos |
+| **Built-in** | shipped with the harness | always (`Explore`, `general-purpose`, `Plan`, …) |
+
+Our `reviewer` is **project-scoped**. Custom agents are **not** global — only built-ins are.
+
+#### Two gotchas we hit live (worth teaching)
+
+1. **Registration needs a session reload.** A sub-agent file created *mid-session* isn't
+   selectable yet — custom agents register when Claude Code loads `.claude/agents/`. We had
+   to demo with the built-in `Explore` instead; `reviewer` shows up after restart (`/agents`
+   to verify). Built-ins work immediately; custom ones add role + format + tool-scope but
+   cost you the reload.
+2. **Workers aren't oracles — the orchestrator must verify.** Our reviewer flagged an
+   `IndexError` in `insights.py` that **wasn't real** (a Python conditional short-circuits
+   before the unsafe call). A read-only worker on a cheaper model reasoned plausibly but
+   wrong. **Delegation buys isolation + parallelism; you pay in coordination, and the main
+   agent owns final judgment.**
+
 ### Hook
 `settings.json`
 ```json
