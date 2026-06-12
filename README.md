@@ -7,6 +7,13 @@ orchestrate them with a master agent.
 > Author note: written as a self-study path **and** a ready-to-run masterclass outline.
 > Official docs: https://docs.claude.com/en/docs/claude-code
 
+> **📚 New: the full SDLC course.** This README is the **mechanics reference** (how each
+> primitive works). The hands-on, stage-by-stage course that applies them across a real
+> embedded-C lifecycle lives in **[COURSE.md](COURSE.md)** with per-stage modules in
+> [`modules/`](modules/), an [instructor guide](instructor/INSTRUCTOR_GUIDE.md), and the
+> companion lab repo **[firmware-lab](https://github.com/kishore123/firmware-lab)**. Start
+> there if you're running or attending the workshop; read this for the underlying mechanics.
+
 ---
 
 ## Build progress (resume here)
