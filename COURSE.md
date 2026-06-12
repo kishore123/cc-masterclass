@@ -60,6 +60,9 @@ be L4?" Feeling the trade-off beats being told it.
 Each module file follows the house format proven in the README:
 **concept → build the artifact live → demo → gotchas → capture it (rule of three).**
 
+**Appendix:** [Zephyr — instructor demo + take-home](modules/appendix-zephyr.md) — why Zephyr
+is a demo, not the lab, and how everything here transfers to your real Zephyr tree.
+
 ---
 
 ## How the pieces relate
