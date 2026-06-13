@@ -1,0 +1,12 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "cc-masterclass-kit",
+  "version": "1.0.0",
+  "description": "The worked SDLC toolkit from the Claude Code Masterclass for embedded-C teams. Bundles slash commands (/draft-req, /ship-feature, /standup), skills (test-gen, release-notes, git-insights), sub-agents (design-reviewer, test-writer, triage, security-reviewer, reviewer), and gate hooks (secret-scan PreToolUse, clang-format PostToolUse). One install delivers the whole kit.",
+  "author": {
+    "name": "kishore123",
+    "email": "kishore123@gmail.com"
+  },
+  "homepage": "https://github.com/kishore123/cc-masterclass",
+  "keywords": ["sdlc", "embedded", "c", "firmware", "security", "masterclass"]
+}

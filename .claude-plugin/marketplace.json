@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "cc-masterclass",
+  "owner": {
+    "name": "kishore123",
+    "email": "kishore123@gmail.com"
+  },
+  "metadata": {
+    "description": "Company hub for the Claude Code SDLC Masterclass. Hosts the cc-masterclass-kit plugin: the worked toolkit (commands, skills, sub-agents, gate hooks) built across the course.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "cc-masterclass-kit",
+      "source": "./plugins/cc-masterclass-kit",
+      "description": "SDLC toolkit for embedded-C teams: /draft-req and /ship-feature commands; test-gen and release-notes skills; design-reviewer, test-writer, triage, security-reviewer, and reviewer sub-agents; secret-scan and clang-format gate hooks; the git-insights and standup helpers."
+    }
+  ]
+}

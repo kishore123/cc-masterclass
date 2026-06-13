@@ -13,6 +13,12 @@ primitive (command, skill, MCP, sub-agent, hook, plugin, orchestration) actually
 and verified live. This `COURSE.md` is the **process spine** that puts those primitives to
 work across a real SDLC on real C code.
 
+> **Working through this solo?** Follow [SELF_STUDY.md](SELF_STUDY.md) — a self-paced path with
+> time estimates and self-check instructions. **Want the team toolkit?** Install
+> [`cc-masterclass-kit`](plugins/cc-masterclass-kit/README.md):
+> `claude plugin marketplace add kishore123/cc-masterclass` then
+> `claude plugin install cc-masterclass-kit@cc-masterclass`.
+
 ---
 
 ## The one idea: SDLC stage × Claude Code primitive × autonomy level
