@@ -22,8 +22,18 @@ The shipped suite is green but the code is wrong. Prompt:
 
 > "The protocol and ring-buffer tests pass, but I suspect untested edge cases. Without reading
 > any answer key, generate tests that probe malformed input to `proto_decode` (oversized LEN,
-> LEN=0, truncated frames) and `rb_peek` after the buffer has wrapped (many put/get cycles
-> first, then peek). Add them to the suite and run."
+> LEN=0, truncated frames) and `rb_peek` when the buffered data **wraps across the end of the
+> backing array** (not just many put/get cycles — you must leave `tail` high with data spanning
+> the wrap, then peek past the boundary). Add them to the suite and run."
+
+> **Teaching note (and a trap to point out).** The naive "do many put/get cycles then peek"
+> does *not* expose BUG-4 — paired put/get keeps `head` and `tail` level, so `tail+offset` never
+> crosses the array end and the test passes on the buggy code too. You must engineer the wrap:
+> on a size-8 buffer, fill 7, drain 6 (tail→6), put 2 more (head wraps to 0); now data sits at
+> indices 6,7,0 and `peek(2)` crosses the boundary. This is itself a lesson: *a test that
+> doesn't reproduce the condition gives false confidence* — the exact failure that shipped BUG-4.
+> A read-overflow may also read plausible garbage without ASan, so run these under ASan
+> (Module 5) for a deterministic catch.
 
 These new tests should **go red** — exposing BUG-1 (decode overflow) and BUG-4 (peek wrap)
 from Module 5's backlog. You just turned "looks fine" into "provably broken." Leave them red;

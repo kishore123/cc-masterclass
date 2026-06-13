@@ -40,8 +40,9 @@ make asan CC=clang        # build/sensor-gw-asan
 ```
 
 Feed the red tests from Module 4 through an ASan build:
-- BUG-4: `rb_peek` after wrap → ASan **heap/global-buffer-overflow READ**.
-- BUG-2: a 40-char `device_id` in config → ASan **stack/global-buffer-overflow WRITE** in the
+- BUG-4: `rb_peek` when buffered data wraps the array end → ASan **stack-buffer-overflow READ**
+  in `rb_peek` (build the wrap: fill 7, drain 6, put 2, then `peek(2)` — see Module 4's note).
+- BUG-2: a long `device_id` in config → ASan **stack-buffer-overflow WRITE of size N** in the
   `strcpy`.
 
 Prompt: *"Run this under ASan, read the report, and identify the exact line and the fix that

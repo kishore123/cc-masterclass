@@ -43,7 +43,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
 }
 ```
 
-Build and run:
+Build and run (drop `src/crc16.c` from the command if FR-7 hasn't been built yet):
 
 ```bash
 clang -g -O1 -fsanitize=fuzzer,address,undefined -Isrc \
@@ -51,12 +51,22 @@ clang -g -O1 -fsanitize=fuzzer,address,undefined -Isrc \
 ./fuzz/fuzz_proto -max_total_time=30
 ```
 
-It crashes within seconds on a `LEN` that overflows `out.payload` (BUG-1). Then:
+It crashes within seconds on a `LEN` that overflows `out.payload` (BUG-1). *(Dry-run verified:
+ASan reports `heap-buffer-overflow in __asan_memcpy` and writes a `crash-…` artifact.)* Then:
 1. **Fix** `proto_decode` (bounds-check; see CLAUDE.md NFR-3).
 2. **Save the crashing input** into `fuzz/corpus/` as a **regression seed**.
 3. Re-run: clean. The corpus is now a permanent guard (SEC-1 done).
 
 This is the headline security lab — *the bug the green suite hid, found by a machine in 30s.*
+
+> **⚠ Instructor sequencing note (validated in the dry-run).** BUG-1 lives in the *original*
+> decoder. A rigorous FR-7 implementation in Module 3 adds the same bounds checks and therefore
+> *already fixes BUG-1* — fuzzing that version finds nothing (we confirmed: the fixed decoder
+> survives). That's not a failure, it's the deeper lesson: **bounds-checking at implementation
+> time prevents the entire bug class.** To guarantee the live "found in 30s" crash, fuzz the
+> **pre-FR-7 decoder** — either run this lab *before* Module 3, or `git stash` the FR-7 change /
+> check out the starting `src/protocol.c`. Then contrast: same harness, vulnerable code crashes,
+> hardened code survives.
 
 ## Lab 6c (gate hook) — block secrets before they commit
 

@@ -97,14 +97,26 @@ NULL. Note the inconsistency with the *other* fields, which correctly guard with
 ```c
 *out = rb->buf[rb->tail + offset];     /* no % rb->size */
 ```
-Once `tail` has advanced near the end, `tail + offset` indexes past the backing array — an
-out-of-bounds read that returns whatever is adjacent in memory. The baseline test only peeks
-at `tail == 0`, so it passes. "After the FIFO has been busy a while" = after `tail` wrapped.
+Once `tail` is high and the buffered data wraps the array end, `tail + offset` indexes past the
+backing array — an out-of-bounds read that returns whatever is adjacent in memory. The baseline
+test only peeks at `tail == 0`, so it passes.
+
+**Exact repro (validated under ASan on Linux):** on a size-8 buffer — fill 7, drain 6 (so
+`tail == 6` with one element at index 6), then `put` 2 more (head wraps to index 0). Data now
+occupies indices 6, 7, 0. `peek(2)` computes `buf[6+2] = buf[8]` → one past the end. ASan:
+`stack-buffer-overflow READ ... in rb_peek`. On the fixed code `peek(2)` returns the element at
+`(6+2) % 8 == 0`.
+
+> **⚠ Instructor caution (this bit us — now fixed).** "Drive *many put/get cycles* then peek"
+> does **not** reproduce BUG-4: paired put/get keeps `head` and `tail` level, so `tail+offset`
+> never crosses the boundary and the test passes on buggy *and* fixed code. The regression test
+> must engineer the wrap as above. Use this as a live teaching moment: *a test that doesn't
+> recreate the condition is worse than no test — it manufactures false confidence.*
 
 **Fix:** `*out = rb->buf[(rb->tail + offset) % rb->size];`
-**Teaches:** wraparound bugs only appear under sustained load; why a passing test gives false
-confidence; ASan read-overflow detection; a property/fuzz test that drives many put/get
-cycles before peeking would have caught it.
+**Teaches:** wraparound bugs only appear when data spans the boundary; why a passing test can
+give false confidence; ASan read-overflow detection; the discipline of proving a regression
+test fails on the *unfixed* code before trusting it.
 
 ---
 

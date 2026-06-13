@@ -64,6 +64,23 @@ attendees following along; the full-day version is attendee-driven with you circ
   feature, not a bug: use it to teach "the orchestrator owns final judgment."
 - **Line numbers in the answer key drift** as attendees edit — search by function name.
 
+## Lab validation status (what's been run end-to-end)
+
+The security/debug labs were dry-run on **Ubuntu 26.04 LTS (WSL2), clang 21 / gcc 15**, on a
+fresh `git clone`. Confirmed working as written:
+
+| Lab | Validated result |
+|---|---|
+| 6b — fuzz `proto_decode` (BUG-1) | libFuzzer+ASan → `heap-buffer-overflow in __asan_memcpy`, crash artifact written, < 5s |
+| 5b — BUG-2 (config strcpy) | ASan → `stack-buffer-overflow WRITE of size 61 in strcpy` |
+| 5a — BUG-3 (missing `port`) | SIGSEGV, exit 139 |
+| 5b — BUG-4 (peek wrap) | ASan → `stack-buffer-overflow READ in rb_peek`; fix returns the correct wrapped value |
+| Solution branch | `make test` 21/21 green; fuzzing the fixed decoder survives (no crash) |
+
+Two things the dry-run *fixed*, now baked into the materials: the BUG-4 repro/test construction
+(see the ⚠ notes in Modules 4–5 and the answer key) and the BUG-1/FR-7 sequencing (Module 6 ⚠
+note). **Sanitizer labs require Linux/macOS/WSL — they do not run on native Windows/MinGW.**
+
 ## Autonomy decision rubric (the closing discussion — don't skip)
 
 Put this on the board and fill it in with the room for *their* real systems:
