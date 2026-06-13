@@ -16,6 +16,26 @@ Every feature you'll meet (commands, skills, MCP, sub-agents, hooks, plugins) is
 different way to *package and scope* those three things. See [README §1](../README.md) for the
 full primitive table — keep it open all day.
 
+## 1b. The capability ladder (the through-line — teach this once, refer back all day)
+
+The Claude Code building blocks aren't a flat list — they form a ladder where **each rung adds
+exactly one new power.** Show this first; then every module is just "we're on this rung now."
+
+| Rung | Building block | The one power it adds | You meet it in |
+|---|---|---|---|
+| 1 | **Prompt / command** | a saved, repeatable instruction | Module 0–1 |
+| 2 | **Skill** | packaged + **auto-selected** by description, can bundle code | Module 4, 8 |
+| 3 | **MCP tool** | **reach beyond the repo** (issue tracker, DB, APIs) | Module 1, 7 |
+| 4 | **Sub-agent** | **delegated context** — a worker with its own window + scoped tools | Module 2, 4, 5, 6 |
+| 5 | **Orchestration** | **many agents** composed in one task | Module 9 |
+| 6 | **Dynamic workflow** | **self-directing** — the agent picks its next step from results | Module 9 |
+
+Read it as a sentence: *a prompt becomes a skill, which can reach out via MCP, delegate to a
+sub-agent, compose into orchestration, and finally route itself as a dynamic workflow.* Hooks
+and plugins sit alongside (a hook is the harness enforcing a rule; a plugin bundles the whole
+ladder for distribution — Module 10). **The higher the rung, the more autonomy in play** — which
+is why the capability ladder and the L2–L4 autonomy ladder rise together.
+
 ## 2. Permission modes (know these before you let it touch firmware)
 
 | Mode | Behaviour | Use when |

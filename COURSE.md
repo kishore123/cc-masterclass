@@ -46,7 +46,7 @@ be L4?" Feeling the trade-off beats being told it.
 | # | SDLC stage | Primary Claude Code concepts | Lab on `firmware-lab` | Autonomy arc |
 |---|---|---|---|---|
 | [0](modules/00-setup-and-mental-model.md) | Setup & mental model | the loop; context; permission modes; `/init` + `CLAUDE.md` | clone, build, first conversation | — |
-| [1](modules/01-requirements.md) | Requirements | prompting; plan mode; `AskUserQuestion`; thinking; capture a command | turn backlog FR-7 into a spec w/ acceptance criteria + traceability | L2→L3 |
+| [1](modules/01-requirements.md) | Requirements | prompting; plan mode; `AskUserQuestion`; capture a command; **MCP tool** (issue tracker) | turn backlog FR-7 into a spec w/ acceptance criteria + traceability; pull/link the GitHub issue via MCP | L2→L3 |
 | [2](modules/02-design.md) | Design | `Explore`/`Plan` sub-agents; plan mode; ADRs; context mgmt | design the CRC frame change; design-reviewer sub-agent critiques | L2→L3 |
 | [3](modules/03-implementation.md) | Implementation | `CLAUDE.md` rules; commands; format-on-edit hook; permission rules | implement FR-7 CRC; hook auto-formats; rules forbid hot-path heap | L2→L3 |
 | [4](modules/04-test.md) | Test | test-writer sub-agent; skills bundling scripts; coverage | generate the tests that catch BUG-1/BUG-4; capture a `test-gen` skill | L3 |

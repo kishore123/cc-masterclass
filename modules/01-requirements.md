@@ -2,7 +2,8 @@
 
 **SDLC stage:** Requirements.
 **You'll learn:** prompting that elicits instead of assumes; plan mode; `AskUserQuestion`;
-thinking effort; capturing a repeatable prompt as a slash command.
+thinking effort; capturing a repeatable prompt as a slash command; **using an MCP tool to
+reach the issue tracker** outside the repo.
 **Lab:** turn backlog item **FR-7** (add CRC-16 to the wire frame) from one line into a real
 spec with acceptance criteria and a traceability row.
 **Autonomy:** L2 (Claude elicits, you decide) → L3 (a `/draft-req` command drafts, you edit).
@@ -42,6 +43,40 @@ Have Claude turn the answers into:
    bytes on CRC mismatch", "encoder appends 2 bytes; max payload becomes 60", …).
 2. A **traceability row**: FR-7 → planned test IDs (`test_proto_crc_roundtrip`,
    `test_proto_crc_rejects_corruption`). Tie it back to the table in SRS.md §3.
+
+## Lab 1bb — reach the issue tracker with an MCP tool
+
+So far everything Claude touched lived **inside the repo**. Real requirements live in an issue
+tracker (GitHub Issues, Jira, Azure Boards). **MCP is how Claude reaches outside the repo** —
+it registers an external system's operations directly into Claude's toolset, so you ask in
+plain language and Claude routes the call (see [README](../README.md) "A live MCP call").
+
+Connect the GitHub MCP server once (the lab repo is on GitHub):
+
+```bash
+claude mcp add --transport stdio github -- npx -y @modelcontextprotocol/server-github
+# (set GITHUB_TOKEN in the environment first)
+```
+
+Then, in plain language:
+
+> "Read GitHub issue #<n> in kishore123/firmware-lab, and draft FR-7's requirement from it.
+> When I approve, **open a tracking issue** linking the requirement to the planned test IDs."
+
+Three lessons land here:
+1. **Reach beyond the repo.** Nothing in firmware-lab knows how to talk to GitHub — the MCP
+   server holds that, runs remotely, and is always current (the "server-hosted, no staleness"
+   case we contrast against local skills).
+2. **Auto-routing from one sentence:** server → tool → args, picked by matching the tool's own
+   description (the "description is the API" throughline again).
+3. **Read vs. write is an autonomy line.** *Reading* the issue fires directly (safe, L3). But
+   **creating** an issue is an outward-facing write — confirm before it executes, never
+   silently auto-create. This is the trust-boundary lesson applied to your *tooling*, not just
+   your code.
+
+> No GitHub token in the room? Demo read-only against a public issue, or substitute the
+> filesystem/SQLite MCP — the routing lesson is identical. The point is *Claude reached a
+> system outside the repo*, not which system.
 
 ## Lab 1c (L3) — capture `/draft-req`
 

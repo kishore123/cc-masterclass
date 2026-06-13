@@ -68,6 +68,12 @@ comments. Sketch:
 Now every PR gets an automated first-pass review (L4) **before** a human review (the L3 gate).
 The two stack; the agent doesn't replace the human, it sharpens what the human spends time on.
 
+> **MCP encore (callback to Module 1).** Opening the PR, posting the review as a comment, and
+> setting labels are *also* GitHub operations — so in an interactive session you can drive them
+> with the **GitHub MCP** instead of `gh` glue: "open a PR for this branch and paste the review
+> as a comment." Same lesson as Module 1 (MCP reaches outside the repo), now on the integration
+> side: **reads fire freely, writes (opening the PR) get confirmed.**
+
 ## Gotcha
 
 L4 needs **hard boundaries**: run on branches not main, keep the `vendor/` deny and secret-scan
