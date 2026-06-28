@@ -24,6 +24,8 @@ Run `claude` once and confirm `/help` works.
 - **Windows:** install **WSL2 (Ubuntu)** — we need AddressSanitizer and a fuzzer, which do not
   run on native Windows. In PowerShell: `wsl --install -d Ubuntu`, reboot if prompted, then
   open the Ubuntu terminal for the next steps.
+  - *Snapdragon / ARM64 Surface laptops are fully supported* — you'll get ARM64 Ubuntu running
+    natively, and all labs (build, tests, sanitizers, fuzzer) work the same.
 
 **3. Install the toolchain** (run inside WSL/Ubuntu, or your Mac/Linux terminal):
 ```bash

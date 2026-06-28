@@ -15,6 +15,11 @@ second pass.
 
 ## Pre-flight (5 min)
 
+> **Assumes the pre-work email is already done** — i.e. WSL2 (Windows) and the toolchain
+> (`build-essential clang cppcheck gdb`) are installed. This is a *verification gate*, not a
+> setup guide. If you're on a fresh machine, run the pre-work email steps first
+> ([PILOT_PREWORK_EMAIL.md](PILOT_PREWORK_EMAIL.md), step 2 installs WSL2), then come back here.
+
 | ✓ | Check | Expected |
 |---|---|---|
 | ☐ | `claude` opens, `/help` works | TUI + command list |
