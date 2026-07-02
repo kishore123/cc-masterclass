@@ -1,9 +1,15 @@
 # Instructor Answer Key — Seeded Defects in `firmware-lab`
 
-> **CONFIDENTIAL — instructor only.** This file lives in the *course* repo, never in
+> **CONFIDENTIAL — instructor answer key.** This file lives in the *course* repo, never in
 > `firmware-lab`. The student repo ships a green build and passing tests; the bugs are in
 > untested edge paths so static tools stay quiet and dynamic analysis (ASan / fuzzing) is
 > what exposes them. That contrast *is* the lesson.
+>
+> **Self-study learner? ⚠️ Spoilers below — stop here.** The entire value of Modules 4–6 is
+> driving Claude from *symptom* to *root cause* yourself (symptoms are in
+> `firmware-lab/requirements/backlog.md`). Reading this key first robs you of exactly that
+> rep. Come back only after you've fixed a bug — or been genuinely stuck past the point of
+> learning.
 
 Line numbers are approximate (they drift as students edit). Each defect maps to a
 symptom-only ticket in `firmware-lab/requirements/backlog.md`.

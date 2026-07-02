@@ -2,9 +2,10 @@
 
 **SDLC stage:** Design.
 **You'll learn:** read-only `Explore`/`Plan` sub-agents for fan-out; plan mode for proposals;
-writing an ADR; managing context so the design conversation stays sharp.
-**Lab:** design the FR-7 CRC change — explore the impact, produce an ADR + the interface, and
-have a design-reviewer sub-agent critique it.
+writing an ADR; a lightweight threat model at design time; managing context so the design
+conversation stays sharp.
+**Lab:** design the FR-7 CRC change — explore the impact, produce an ADR + the interface,
+threat-model the frame, and have a design-reviewer sub-agent critique it.
 **Autonomy:** L2 (you design, Claude assists) → L3 (a design-reviewer sub-agent gates).
 
 ---
@@ -67,6 +68,27 @@ criteria. Do not propose code — only design critique.
 Restart (or `/agents` to confirm registration), then delegate the ADR to it. The human still
 approves — the sub-agent is a **gate, not the decision-maker**. That's L3.
 
+## Lab 2d — threat-model the frame (shift security left)
+
+Security shouldn't first appear when we fuzz in Module 6 — by then the design is set. While
+the ADR is still `proposed`, ask the attacker question:
+
+> "Threat-model ADR-0001. Assume an attacker controls the wire. For each field (LEN, TYPE,
+> PAYLOAD, CRC): what can a hostile value do? What does the CRC actually protect against —
+> and what does it *not*? Output a table: threat → field → mitigation → where it's verified
+> (test / fuzz / review)."
+
+Two design-grade findings this surfaces on `firmware-lab`:
+- A hostile `LEN` is the entire BUG-1 class. The mitigation — *decoder validates bounds
+  before any copy* — belongs in the ADR's **Decision**, not in some future bug fix.
+- **CRC-16 is not a security boundary.** It detects *corruption*; an attacker who forges a
+  frame just recomputes the CRC. If FR-7's goal were tamper-proofing, the design would need
+  a MAC. Recording that **non-goal** in the ADR prevents a false sense of security later.
+
+Fold the table into the ADR as a `## Threats` section, and add the attacker question to
+`design-reviewer`'s prompt so every future design gets it by default (the kit's copy already
+has it).
+
 ## Gotcha
 
 A sub-agent file created mid-session isn't selectable until reload ([README](../README.md)).
@@ -78,8 +100,8 @@ Design stays **L2–L3**. Architectural judgment is the human's; Claude accelera
 and documentation and provides a second set of eyes.
 
 ## Capture / deliverable
-- `docs/adr/0001-frame-crc.md`, plus the updated `protocol.h` interface (signatures + the new
-  size constant) — implementation comes next.
-- `.claude/agents/design-reviewer.md`.
+- `docs/adr/0001-frame-crc.md` **including the `## Threats` table**, plus the updated
+  `protocol.h` interface (signatures + the new size constant) — implementation comes next.
+- `.claude/agents/design-reviewer.md` (with the attacker question in its prompt).
 
 ➡ Next: [Module 3 — Implementation](03-implementation.md)

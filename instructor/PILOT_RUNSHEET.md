@@ -35,15 +35,19 @@ second pass.
 |---|---|---|---|---|---|---|
 | ★ | 0 | Setup & mental model | Open `claude`; ask "walk me through `src/main.c`"; ask "where does untrusted input enter?"; run `/init` | Sensible tour; names `proto_decode`/`config_load`/`cli`; `/init` drafts a CLAUDE.md | 20 | |
 | ★ | 1 | Requirements | `/draft-req FR-7` | Asks clarifying Qs, then drafts requirement + acceptance criteria + traceability row | 20 | |
-| ★ | 2 | Design | Plan-mode: explore impact of adding a CRC; have it draft an ADR | Fan-out finds encode/decode call sites + size budget; ADR written | 25 | |
+| ★ | 2 | Design | Plan-mode: explore impact of adding a CRC; have it draft an ADR; threat-model the frame (Lab 2d) | Fan-out finds encode/decode call sites + size budget; ADR written incl. a `## Threats` table that notes CRC ≠ tamper-proofing | 30 | |
 | ★ | 3 | Implementation | Ask Claude to implement FR-7 (CRC-16) per the ADR; build + test each step | New `crc16.*`, decode validates CRC, tests updated & green; `-Wall -Wextra` clean | 40 | |
 | ★ | 4 | Test | Ask for tests probing malformed `proto_decode` + `rb_peek` wrap (see Module 4 ⚠ note) | New tests; the wrap test exposes the latent bug | 20 | |
 | ★ | 6 | Security | Build the libFuzzer harness; `./fuzz/fuzz_proto -max_total_time=30` | ASan **heap-buffer-overflow** + crash artifact in seconds (BUG-1) | 30 | |
 |  | 5 | Debug | Reproduce BUG-3 (config `{"uplink":{}}`) under gdb; BUG-2/4 under ASan | gdb shows null-deref line; ASan shows the overflows | 25 | |
 |  | 7 | Build & integrate | Break the build on purpose; run `claude -p "fix the build…"` | Headless loop edits → `make` → repairs → tests green | 20 | |
-|  | 8 | Release | Run the `release-notes` skill since last tag | Grouped Features/Fixes/Security draft tied to backlog IDs | 15 | |
+|  | 8 | Release | Run the `release-notes` skill since last tag; tag with `git tag -s` (no key? `-a` and note it) | Grouped Features/Fixes/Security draft tied to backlog IDs; tag verifies with `git tag -v` | 15 | |
 |  | 9 | Orchestration | `/ship-feature FR-6a` | Plans, fans out implementer+reviewer+tester, merges, runs tests | 20 | |
 |  | 10 | Rollout | `claude plugin marketplace add kishore123/cc-masterclass` then install the kit | Plugin installs enabled; skills appear namespaced | 10 | |
+
+> **Not piloted live (take-home track):** Lab 7e (supply chain), Lab 8e (sign what you ship),
+> and the [post-release appendix](../modules/appendix-post-release.md) (CVE watch + hotfix
+> drill). Skim them once so you can answer questions, but don't add them to the pilot clock.
 
 ---
 

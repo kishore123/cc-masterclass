@@ -51,18 +51,20 @@ the whole point is feeling the loop.
 |---|---|---|---|
 | 0 | [Setup & mental model](modules/00-setup-and-mental-model.md) | 20m | `CLAUDE.md`, first real conversation |
 | 1 | [Requirements](modules/01-requirements.md) | 30m | FR-7 spec + `/draft-req`; an MCP call to the issue tracker |
-| 2 | [Design](modules/02-design.md) | 30m | ADR-0001 + a design-reviewer sub-agent |
+| 2 | [Design](modules/02-design.md) | 40m | ADR-0001 (incl. `## Threats` table) + a design-reviewer sub-agent |
 | 3 | [Implementation](modules/03-implementation.md) | 35m | FR-7 CRC implemented; format hook + permission rules |
 | 4 | [Test](modules/04-test.md) | 30m | tests that expose the bugs; `test-gen` skill |
 | 5 | [Debug](modules/05-debug.md) | 35m | BUG-2/3/4 root-caused with gdb + ASan |
 | 6 | [Security](modules/06-security.md) | 40m | fuzz harness finds BUG-1; secret-scan gate hook |
-| 7 | [Build & integrate](modules/07-build-integrate.md) | 30m | headless build-fixer; agent PR review |
-| 8 | [Release](modules/08-release.md) | 20m | v1.1.0 with generated notes + semver check |
+| 7 | [Build & integrate](modules/07-build-integrate.md) | 45m | headless build-fixer; agent PR review (injection-hardened); supply-chain pass (SHA-pins, SBOM, vendor audit) |
+| 8 | [Release](modules/08-release.md) | 30m | v1.1.0 with generated notes + semver check; signed tag + `SHA256SUMS` |
 | 9 | [Orchestration & dynamic workflow](modules/09-orchestration.md) | 35m | `/ship-feature`; static vs dynamic workflow |
 | 10 | [Capstone & rollout](modules/10-capstone-and-rollout.md) | 40m | one feature end-to-end; install the kit |
 
-Optional: [Zephyr appendix](modules/appendix-zephyr.md) — how all of this transfers to a real
-Zephyr tree.
+Optional appendices:
+- [Zephyr](modules/appendix-zephyr.md) — how all of this transfers to a real Zephyr tree.
+- [After the tag](modules/appendix-post-release.md) (~45m) — post-release & maintenance:
+  the hotfix drill and a CVE-watch routine. Strongly recommended if you ship devices.
 
 ## Checking your work (the honest way)
 

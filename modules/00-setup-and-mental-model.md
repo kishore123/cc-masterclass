@@ -58,6 +58,11 @@ Every later module does a task at L2, repeats it at L3, and asks whether it shou
 
 ## Lab 0 — clone, build, first contact
 
+> **Environment first.** You need a Linux toolchain: Mac/Linux are ready; **on Windows, work
+> inside WSL2 Ubuntu** — Modules 5–6 need AddressSanitizer and libFuzzer, which native
+> Windows/MinGW doesn't provide. Then `sudo apt install -y build-essential clang cppcheck gdb`.
+> Full pre-check in [SELF_STUDY.md § Before you start](../SELF_STUDY.md#before-you-start-20-minutes--dont-skip).
+
 ```bash
 git clone https://github.com/kishore123/firmware-lab.git
 cd firmware-lab

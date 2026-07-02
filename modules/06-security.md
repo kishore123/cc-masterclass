@@ -90,6 +90,17 @@ to write an obvious secret. `firmware-lab/.claude/settings.json`:
 block** on a hit. Demo: ask Claude to add `const char *k = "AKIAIOSFODNN7EXAMPLE";` — the hook
 blocks the write. This is policy-as-code: the harness enforces it regardless of model judgment.
 
+### Where secrets *should* live (the positive half)
+
+The gate says "not in the repo"; teams still need the answer to *then where?* Two rules:
+- **Build/CI secrets** (API keys, signing keys): the CI secret store or a vault, injected as
+  env vars at run time — never in source, never baked into the image.
+- **Device secrets**: provisioned **per device** at manufacture (unique keys in secure storage
+  or a secure element), never one shared key compiled into the firmware — one dumped image
+  must not compromise the fleet.
+
+Quick L3 exercise: have Claude grep the lab for anything violating either rule.
+
 ## Lab 6d (L4 in CI) — static analysis gate
 
 Tighten the advisory cppcheck step in `.github/workflows/ci.yml` into a **gate** for new code,
@@ -101,6 +112,11 @@ suppress false positives with justification. Scanning is L4; the suppressions ar
 `firmware-lab/.claude/agents/security-reviewer.md` (Read/Grep only): reviews a diff for
 trust-boundary, memory-safety, and secret issues, reports with file:line and CWE where it
 applies. Use it as a PR gate in Module 7.
+
+> **If you ship under a standard** (MISRA C, IEC 62443, ISO 26262…): these labs are the
+> *tooling* layer, not the compliance argument. Map the outputs — fuzz corpus, scan reports,
+> triage records — onto your process's evidence requirements; Claude can draft that mapping,
+> but your process owner ratifies it.
 
 ## Autonomy verdict
 

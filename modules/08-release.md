@@ -2,7 +2,8 @@
 
 **SDLC stage:** Release.
 **You'll learn:** a release-notes skill that drafts from git history; a semver-validation hook;
-`/schedule` routines for recurring release chores; the human-approval gate.
+signing the tag + publishing artifact digests; `/schedule` routines for recurring release
+chores; the human-approval gate.
 **Lab:** cut **v1.1.0** (FR-7 + the bug fixes) — Claude drafts notes from commits, a hook
 validates the tag, you approve the cut.
 **Autonomy:** L3 (automate the mechanics, human approves) → L4 (scheduled release-prep routine).
@@ -45,12 +46,13 @@ trigger.
 ## Lab 8c — cut the release (L3)
 
 ```bash
-git tag -a v1.1.0 -m "FR-7 CRC frame; fixes BUG-1..4; SEC-1/2"
+git tag -s v1.1.0 -m "FR-7 CRC frame; fixes BUG-1..4; SEC-1/2"   # -s = signed (falls back: -a)
 git push origin v1.1.0
 ```
 
 Claude drafted the notes; the hook validated the tag; **you** decided it was ready. That
-division is the L3 release pattern.
+division is the L3 release pattern. Use `-s` if you have a signing key configured (`-a` works
+for the lab, but then nothing proves *who* cut the release — see Lab 8e).
 
 ## Lab 8d (L4) — a scheduled release-prep routine
 
@@ -61,6 +63,24 @@ routine does L4 prep; the merge stays an L3 human gate.
 > This is the one place a `/schedule` is genuinely warranted: a real recurring obligation with
 > a date. Elsewhere in the course, don't reach for scheduling just because you can.
 
+## Lab 8e (take-home) — sign what you ship
+
+The semver hook validates the tag *string*; nothing yet proves **who** cut the release or
+**what bytes** shipped. Close both gaps:
+
+1. **Signed tag.** `git tag -s` (Lab 8c), then verify with `git tag -v v1.1.0`. CI should
+   verify the tag signature *before* building a release artifact from it.
+2. **Artifact digest.** `sha256sum build/sensor-gw > SHA256SUMS`, published alongside the
+   release — the minimum bar for "the binary you fetched is the binary we built."
+3. **The real-world rung** (concept only, host lab can't do it): production firmware is
+   *image-signed* and verified by a secure bootloader — signature check at boot plus
+   anti-rollback counters. The release process you just built is exactly where that signing
+   step slots in, and the signing key lives in CI's secret store (Module 6's rule), never
+   in the repo.
+
+Have Claude add steps 1–2 to `tools/check-semver.sh`'s checklist and the CI release job.
+For firmware, **an unsigned release process is a security finding**, not a style choice.
+
 ## Autonomy verdict
 
 Release runs **L3–L4**: notes, changelog, and tag validation are automated/scheduled (L4 prep);
@@ -69,6 +89,7 @@ decision alone.
 
 ## Capture / deliverable
 - `.claude/skills/release-notes/SKILL.md`, `tools/check-semver.sh`.
-- A tagged `v1.1.0` with generated, human-approved notes.
+- A tagged (ideally **signed**) `v1.1.0` with generated, human-approved notes + `SHA256SUMS`.
 
 ➡ Next: [Module 9 — Orchestration & Dynamic Workflow](09-orchestration.md)
+➡ Take-home: [After the tag — post-release & maintenance](appendix-post-release.md)
