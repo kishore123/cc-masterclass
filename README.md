@@ -29,19 +29,19 @@ Each below was actually created in `.claude/` (or `~/.claude/`) and verified liv
 | 4 | Sub-agent | `.claude/agents/reviewer.md` | spawned via built-in `Explore` | ✅ done |
 | 5 | Hook | `.claude/settings.json` + `.claude/hooks/log-py-edits.ps1` | logged a real `.py` edit | ✅ done |
 | 6 | Plugin | `~/.claude/skills/cc-masterclass-kit/` | bundled all 4, `/reload-plugins` loaded it | ✅ done |
-| 7 | **Orchestration** | — | **NOT STARTED** | ⏭️ next |
+| 7 | **Orchestration** | `.claude/commands/orchestrate.md` | 3 parallel `Explore` workers analyzed this repo, merged in-session | ✅ done |
 
-**Resume point — Orchestration (the finale).** Plan agreed, explanation-first:
-- **A. In-session (no code):** build an `/orchestrate` command; live demo = a **repo-analysis
-  fan-out** (2–3 read-only `Explore` workers answer different questions about this repo in
-  parallel, then merge). *This is the part we execute live.*
-- **B. Agent SDK (programmatic):** sketch the `query(...)` loop in Python/TS — *explained &
-  code-sketched only, not run here* (needs its own project/auth/runtime).
-- **Middle ground:** `/loop` and `/schedule`.
-- **Then:** capstone idea `/ship-feature` (plan → implementer + reviewer + tester → merge).
+**Build complete — all 7 primitives built and demoed live.** The finale ran as the planned
+repo-analysis fan-out: three read-only `Explore` workers (course-structure map, plugin
+inventory, stale-docs audit) spawned in one message and merged in-session — see §4A for
+what the run taught. The Agent SDK half stayed explanation-only as planned (§4B), with
+`/loop` and `/schedule` as the middle ground. The capstone idea graduated from idea to
+shipped artifact: `/ship-feature` lives in the plugin
+(`plugins/cc-masterclass-kit/commands/ship-feature.md`) and is the lab for Module 9.
 
-Open decisions parked: plugin is **user-scoped only** (not vendored into this repo, no
-`marketplace.json` yet — deferred until we actually ship it).
+Previously parked decisions, since resolved: the plugin is now vendored in-repo at
+`plugins/cc-masterclass-kit/` with a marketplace manifest at
+`.claude-plugin/marketplace.json` (both v1.0.0).
 
 ---
 
@@ -487,12 +487,39 @@ There are two distinct ways to do "master agent orchestrating workers." Teams co
 Your main Claude **is** the master. It spawns sub-agents via the Task tool, in parallel,
 each with scoped tools, then synthesizes their results. Steer it with a planner command:
 
-`.claude/commands/orchestrate.md`
+`.claude/commands/orchestrate.md` (built & demoed live)
 ```markdown
-Break this task into independent subtasks. Spawn one sub-agent per subtask
-in parallel, each returning only its conclusion. Then merge and report.
+Orchestrate a fan-out: split the task below into independent subtasks and run
+them as parallel sub-agents, then merge.
+
+Steps:
+1. Break the task into 2–4 genuinely independent subtasks — none may depend on
+   another's output. If the task is inherently sequential, say so and work it
+   directly instead of fanning out.
+2. Spawn one read-only Explore sub-agent per subtask, all in a single message so
+   they run in parallel. Each prompt must be self-contained (workers don't see
+   this conversation): state the repo path, the one question to answer, and that
+   the worker must return only its conclusions, not file dumps.
+3. When all workers return, merge: reconcile overlaps, flag any disagreements
+   explicitly, and report one synthesized answer followed by a short per-worker
+   appendix.
+
+Task: $ARGUMENTS
 ```
 Great for research fan-out, multi-file refactors, parallel reviews. No infra, cheap to demo.
+
+**What the live demo taught** (three `Explore` workers analyzed this repo in parallel —
+course-structure map, plugin inventory, stale-docs audit):
+- Parallelism is literally just **N Task calls in one message** — nothing else changes
+  versus the single sub-agent from primitive #4.
+- Workers start cold. A prompt that assumes conversation context returns garbage; each
+  one needs the repo path and the full question restated, plus an explicit
+  "conclusions only" contract or you get file dumps back.
+- Workers see the **live filesystem, not a snapshot**: one worker found the
+  `orchestrate.md` written seconds earlier and flagged the docs stale in real time.
+- The merge is where the value is. Each worker alone returned facts; together they
+  pinpointed that exactly one file (this README) still called orchestration unbuilt —
+  a conclusion no single worker was asked for.
 
 ### B. Programmatic orchestration (Agent SDK)
 When you need a **durable** loop — retries, scheduling, external triggers, a real control
