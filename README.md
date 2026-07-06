@@ -320,9 +320,10 @@ Our `reviewer` is **project-scoped**. Custom agents are **not** global — only 
 
 1. **Registration needs a session reload.** A sub-agent file created *mid-session* isn't
    selectable yet — custom agents register when Claude Code loads `.claude/agents/`. We had
-   to demo with the built-in `Explore` instead; `reviewer` shows up after restart (`/agents`
-   to verify). Built-ins work immediately; custom ones add role + format + tool-scope but
-   cost you the reload.
+   to demo with the built-in `Explore` instead; `reviewer` shows up after restart. There's no
+   `/agents` wizard to verify with anymore — confirm registration by asking Claude to delegate
+   to the agent directly. Built-ins work immediately; custom ones add role + format + tool-scope
+   but cost you the reload.
 2. **Workers aren't oracles — the orchestrator must verify.** Our reviewer flagged an
    `IndexError` in `insights.py` that **wasn't real** (a Python conditional short-circuits
    before the unsafe call). A read-only worker on a cheaper model reasoned plausibly but

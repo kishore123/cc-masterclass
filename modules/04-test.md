@@ -41,7 +41,9 @@ Module 5/6 fix the code.
 
 ## Lab 4b — a test-writer sub-agent
 
-`firmware-lab/.claude/agents/test-writer.md`:
+**Write this file yourself** at `firmware-lab/.claude/agents/test-writer.md` — a sub-agent is
+just config that shapes how Claude behaves, not an analysis artifact, so the format is the
+lesson:
 
 ```markdown
 ---
@@ -54,6 +56,9 @@ You write Unity tests for this firmware. Cover happy path, boundary values, and 
 / malformed input (this code crosses trust boundaries). Register each test in test_runner.c.
 Build and run `make test` and report pass/fail. Prefer many small assertions with clear names.
 ```
+
+> **Plan B:** stuck on the frontmatter? Ask Claude to draft one example, then delete it and
+> write your own from scratch before moving on.
 
 ## Lab 4c (capture) — the `test-gen` skill
 

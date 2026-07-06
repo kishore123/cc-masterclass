@@ -18,7 +18,8 @@ judgment."
 
 ## Lab 8a — a release-notes skill
 
-`firmware-lab/.claude/skills/release-notes/SKILL.md`:
+**Write this file yourself** at `firmware-lab/.claude/skills/release-notes/SKILL.md` — a skill
+is config that shapes how Claude behaves, not an analysis artifact, so the format is the lesson:
 
 ```markdown
 ---
@@ -32,6 +33,9 @@ description: Draft release notes for firmware-lab from git history since the las
 4. Output Keep-a-Changelog markdown under a new version heading. Do not tag — that's the
    human's call after review.
 ```
+
+> **Plan B:** stuck on the format? Ask Claude to draft one example, then delete it and write
+> your own from scratch before moving on.
 
 Run it after FR-7 + the Module 5/6 fixes. You get a structured draft tied to backlog IDs —
 note FR-7, BUG-1..4, SEC-1/2 all surface from the history you built across the course.

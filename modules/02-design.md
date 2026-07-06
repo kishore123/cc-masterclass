@@ -50,7 +50,9 @@ that just did the analysis.**
 
 ## Lab 2c (L3) — a design-reviewer sub-agent
 
-Create `firmware-lab/.claude/agents/design-reviewer.md`:
+**Write this file yourself** at `firmware-lab/.claude/agents/design-reviewer.md` — a sub-agent
+is just config that shapes how Claude behaves, not an analysis artifact, so the format is the
+lesson:
 
 ```markdown
 ---
@@ -65,8 +67,13 @@ coverage gaps. Report concrete risks with file:line. Be skeptical; flag missing 
 criteria. Do not propose code — only design critique.
 ```
 
-Restart (or `/agents` to confirm registration), then delegate the ADR to it. The human still
-approves — the sub-agent is a **gate, not the decision-maker**. That's L3.
+> **Plan B:** stuck on the frontmatter? Ask Claude to draft one example, then delete it and
+> write your own from scratch before moving on.
+
+Restart so Claude Code rescans `.claude/agents/` — there's no `/agents` wizard anymore; confirm
+registration by asking Claude to delegate to the agent directly (e.g. "use the design-reviewer
+subagent to critique ADR-0001"). Then delegate the ADR to it. The human still approves — the
+sub-agent is a **gate, not the decision-maker**. That's L3.
 
 ## Lab 2d — threat-model the frame (shift security left)
 

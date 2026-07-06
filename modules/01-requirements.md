@@ -80,8 +80,10 @@ Three lessons land here:
 
 ## Lab 1c (L3) — capture `/draft-req`
 
-You'll do this again for FR-6a, FR-9. **Rule of three** → capture it. Create
-`cc-masterclass/.claude/commands/draft-req.md` (or in firmware-lab so it travels with the code):
+You'll do this again for FR-6a, FR-9. **Rule of three** → capture it. **Write this file
+yourself** at `cc-masterclass/.claude/commands/draft-req.md` (or in firmware-lab so it travels
+with the code) — a command is config that shapes how Claude behaves, not an analysis artifact,
+so the format is the lesson:
 
 ```markdown
 Given a backlog item ID, read it from requirements/backlog.md and the relevant source.
@@ -89,6 +91,9 @@ First ask any clarifying questions needed for a complete, testable requirement.
 Then draft: a numbered requirement, testable acceptance criteria, and a traceability row
 mapping it to planned test IDs. Match the style of requirements/SRS.md.
 ```
+
+> **Plan B:** stuck on the format? Ask Claude to draft one example, then delete it and write
+> your own from scratch before moving on — the goal is that you can produce this file unaided.
 
 Now `/draft-req FR-6a` repeats the ritual. That jump — from free-typing to a shared,
 checked-in command — is the L2→L3 move for this stage.

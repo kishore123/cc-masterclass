@@ -31,7 +31,8 @@ runs — then graduate to the SDK (B).
 
 ## Lab 9a — the `/ship-feature` orchestrator
 
-`firmware-lab/.claude/commands/ship-feature.md`:
+**Write this file yourself** at `firmware-lab/.claude/commands/ship-feature.md` — a command is
+config that shapes how Claude behaves, not an analysis artifact, so the format is the lesson:
 
 ```markdown
 Given a backlog item ID, ship it end to end:
@@ -42,6 +43,9 @@ Given a backlog item ID, ship it end to end:
 3. Merge their outputs, apply review fixes, run `make test`, and report a summary diff.
 Stop and ask before any git commit.
 ```
+
+> **Plan B:** stuck on the format? Ask Claude to draft one example, then delete it and write
+> your own from scratch before moving on.
 
 Run `/ship-feature FR-6a` (the `stats` CLI command). Watch the main agent plan, fan out to
 workers with scoped tools, and synthesize — every primitive from the course composing at once:

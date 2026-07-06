@@ -22,7 +22,8 @@ the watching so you only review at the end:
 
 ## Lab 3a — add a format-on-edit hook
 
-Create `firmware-lab/.claude/settings.json`:
+**Write this file yourself** at `firmware-lab/.claude/settings.json` — hook config shapes how
+the harness behaves, not an analysis artifact, so the format is the lesson:
 
 ```json
 {
@@ -35,6 +36,9 @@ Create `firmware-lab/.claude/settings.json`:
   }
 }
 ```
+
+> **Plan B:** stuck on the hook schema? Ask Claude to draft one example, then delete it and
+> write your own from scratch before moving on.
 
 Now every edit is auto-formatted to `.clang-format`. Edit a `.c` file and watch it normalize
 **without Claude choosing to** — the harness did it. (Open `/hooks` once so the watcher

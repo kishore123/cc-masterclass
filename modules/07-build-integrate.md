@@ -51,8 +51,9 @@ three lenses on one diff.
 
 ## Lab 7d — Claude as a CI reviewer
 
-Add a job to `.github/workflows/` that runs Claude Code headless on PRs to post review
-comments. Sketch:
+**Write this job yourself** in `.github/workflows/` — it's config that shapes how an agent
+runs unattended in your pipeline, so the mechanics are the lesson. Sketch to build from (it's
+deliberately incomplete — finish the PR-comment step yourself):
 
 ```yaml
   agent-review:
@@ -65,6 +66,9 @@ comments. Sketch:
         env: { ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }} }
       # ...post review.md as a PR comment
 ```
+
+> **Plan B:** stuck on the YAML or the PR-comment step? Ask Claude to draft a complete
+> version, then adapt it to your actual CI before moving on.
 
 Now every PR gets an automated first-pass review (L4) **before** a human review (the L3 gate).
 The two stack; the agent doesn't replace the human, it sharpens what the human spends time on.

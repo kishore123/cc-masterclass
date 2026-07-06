@@ -51,7 +51,8 @@ respects CLAUDE.md's bounds-checking rule."* Discuss how ASan turns "occasionall
 
 ## Lab 5c (L3) — a triage sub-agent for first pass
 
-`firmware-lab/.claude/agents/triage.md`:
+**Write this file yourself** at `firmware-lab/.claude/agents/triage.md` — a sub-agent is just
+config that shapes how Claude behaves, not an analysis artifact, so the format is the lesson:
 
 ```markdown
 ---
@@ -64,6 +65,9 @@ Given a crash/ASan report, locate the faulting code, state the most likely root 
 file:line and evidence, and propose a minimal fix consistent with CLAUDE.md. Do not commit;
 hand back a diagnosis for human confirmation.
 ```
+
+> **Plan B:** stuck on the frontmatter? Ask Claude to draft one example, then delete it and
+> write your own from scratch before moving on.
 
 Delegate the raw ASan dump to it for a first read, then **you confirm**. The orchestrator owns
 final judgment — a worker on a cheaper model can be confidently wrong (README's reviewer story).

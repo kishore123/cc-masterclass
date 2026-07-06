@@ -109,9 +109,13 @@ suppress false positives with justification. Scanning is L4; the suppressions ar
 
 ## Lab 6e (sub-agent) — security-reviewer
 
-`firmware-lab/.claude/agents/security-reviewer.md` (Read/Grep only): reviews a diff for
-trust-boundary, memory-safety, and secret issues, reports with file:line and CWE where it
-applies. Use it as a PR gate in Module 7.
+**Write this file yourself** at `firmware-lab/.claude/agents/security-reviewer.md` (Read/Grep
+only): reviews a diff for trust-boundary, memory-safety, and secret issues, reports with
+file:line and CWE where it applies. Use it as a PR gate in Module 7. A sub-agent is config that
+shapes how Claude behaves, not an analysis artifact, so the format is the lesson.
+
+> **Plan B:** stuck on the frontmatter? Ask Claude to draft one example, then delete it and
+> write your own from scratch before moving on.
 
 > **If you ship under a standard** (MISRA C, IEC 62443, ISO 26262…): these labs are the
 > *tooling* layer, not the compliance argument. Map the outputs — fuzz corpus, scan reports,
